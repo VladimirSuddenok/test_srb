@@ -2,7 +2,8 @@ from typing import Dict, Any, List, Callable
 
 def debug_logger(func: Callable):
     def wrapper(cls, **kwargs: Dict[str, Any]):
-        msg = "set_cls_params: class = %s , params = %s" % ()
+        msg = "set_cls_params: class=%s, params=%s" % \
+            (cls.__name__, str(kwargs))
         print(msg)
 
         return func(cls, **kwargs)
