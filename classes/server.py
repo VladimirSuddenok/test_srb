@@ -1,5 +1,6 @@
 from classes.parents_classes.base_class import BaseClass
 from aiohttp import web
+from classes.view import EventView
 
 class Server(BaseClass):
     parameters = ["host", "port"]
@@ -10,20 +11,18 @@ class Server(BaseClass):
         # type: get, post, put, view
         # template {"url": "your/url", "type": "view", "handler": your_handel}
         self._routes = [
-
+            {"url": "/echo", "type": "view", "handler": EventView}
         ]
 
     def _set_view(self, app) -> int:
         ''' build application routes '''
-        for rout in self._routes:
+        for route in self._routes:
             buffer = []
 
             if route["type"] == "view":
                 buffer.append(
                     web.view(route["url"], route["handler"])
                 )
-
-            # elif pass
                 
             app.add_routes(buffer)
         
