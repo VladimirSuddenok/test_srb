@@ -3,6 +3,7 @@ from aiohttp import web
 from classes.view import EventView
 
 class Server(BaseClass):
+    '''  '''
     parameters = ["host", "port"]
 
     def __init__(self):
@@ -11,7 +12,7 @@ class Server(BaseClass):
         # type: get, post, put, view
         # template {"url": "your/url", "type": "view", "handler": your_handel}
         self._routes = [
-            {"url": "/echo", "type": "view", "handler": EventView}
+            {"url": "/push_event", "type": "view", "handler": EventView},
         ]
 
     def _set_view(self, app) -> int:
@@ -38,4 +39,3 @@ class Server(BaseClass):
         run_args = {"app": app, "host": cls.host, "port": cls.port}
 
         return web._run_app(**run_args)
-        #app.add_routes([web.get('/', hello)])
