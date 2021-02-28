@@ -3,7 +3,7 @@
 import asyncio
 #from settings import Setup
 from classes.server import Server
-from classes.backed_connectors import SQLDB
+from classes.backed_connectors import SQLDB, NoSQLDB
 
 version = "0.002.001"
 
@@ -23,7 +23,7 @@ async def test_sql_connection():
         "max_overflow": 0
     }
     #SQLBD.set_cls_params(**settings)
-    sql = SQLDB(meth="init", params=settings)
+    sql = SQLDB(params=settings)
     show_table = '''
     SELECT 
         name
@@ -50,11 +50,18 @@ async def test_sql_connection():
     return 0
 
 async def test_no_sql_connection():
-    settings = {"host": "127.0.0.1", "port": 8080}
-    Server.set_cls_params(**settings)
-    server_runner = Server.get_runner()
-    print("server_run_cor", server_runner)
-    await server_runner
+    settings = {"connetion_string": "127.0.0.1:6379", "minsize": 1, "maxsize": 3}
+    await NoSQLDB.init(params=settings)
+    nosql = NoSQLDB()
+    print(nosql.__dict__)
+    print(nosql)
+    await nosql.write()
+    res = await nosql.read()
+    print("res", res)
+    #Server.set_cls_params(**settings)
+    #server_runner = Server.get_runner()
+    #print("server_run_cor", server_runner)
+    #await server_runner
 
     return 0
 
@@ -66,7 +73,7 @@ async def main():
     #start_func, args = server.get_runner()
     
     await asyncio.gather(
-        test_sql_connection()
+        test_no_sql_connection()
         # print start log
         # run server
     )
