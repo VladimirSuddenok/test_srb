@@ -1,11 +1,16 @@
-from classes.parents_classes.base_class import BaseClass
+from classes.parents_classes.base_class import BaseClass, debug_logger_inst
 from aiohttp import web
 from classes.view import EventView
+
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 class Server(BaseClass):
     '''  '''
     parameters = ["host", "port"]
-
+    
+    @debug_logger_inst
     def __init__(self):
         '''  '''
         # here will be all application routes
@@ -32,6 +37,7 @@ class Server(BaseClass):
     @classmethod
     def get_runner(cls):
         ''' return coroutine for start server '''
+        logger.debug("Server - get_runner - build aoihttp application")
         instance = Server()
         app = web.Application()
 
