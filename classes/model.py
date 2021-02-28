@@ -1,22 +1,28 @@
+
+from classes.parents_classes.base_class import BaseClass, debug_logger_inst
+
 from classes.backed_connectors import SQLDB, NoSQLDB
 from typing import Tuple 
 from asyncio import sleep
-from classes.parents_classes.base_class import BaseClass
+
 from re import compile
+
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 # vars
 sqldb = SQLDB()
 nosqldb = NoSQLDB()
 
 class Patterns(BaseClass):
-    ''' Model of pattern 
-        Implements methods for processing pattern
-    '''
+    ''' Implements methods for processing pattern '''
 
     parameters = ["update_delay"]
     _instances  = {}
     _ids = []
     
+    @debug_logger_inst
     def __init__(self, rule_name: str, pattern: str):
         ''' Constructor '''
         self._rule_name = rule_name
@@ -35,7 +41,7 @@ class Patterns(BaseClass):
         # do check for each model 
         for id in Patterns._ids:
             instance = cls._instances[id]
-            result = instance.check_by_patter(msg=msg)
+            result = instance._check_by_patter(msg=msg)
 
             if result:
                 status = True
@@ -45,13 +51,17 @@ class Patterns(BaseClass):
             else:
                 continue
         
+        data = "Patterns - check_message - status=%s, message=%s, msg=%s" % \
+                (status, message, msg)
+        logger.debug(data)
+
         # write msg to document
         if status:
             await nosqldb.write(key=message, msg=msg)
         
         return status, message
 
-    async def _check_by_patter(self, msg) -> bool:
+    def _check_by_patter(self, msg) -> bool:
         ''' Search matches in message '''
         data = self._pattern.findall(msg)
         return True if len(data) > 0 else False
@@ -64,6 +74,11 @@ class Patterns(BaseClass):
         while True:
             # load all patterns
             dict_patterns = await sqldb.get_patterns()
+
+            msg = "Patterns - load_patterns - dict_patterns - %s" % \
+                    str(dict_patterns)
+            logger.debug(msg)
+
             for record in dict_patterns:
                 p_id = record.pop('id')
                 # if there is no patterns
