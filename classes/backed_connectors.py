@@ -3,6 +3,11 @@ from sqlalchemy.ext.asyncio import create_async_engine
 import aioredis
 from typing import Type, Dict, Union, List
 from sqlalchemy.engine.cursor import CursorResult
+from classes.parents_classes.base_class import debug_logger_inst, debug_logger
+
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 # types
 db_record = Dict[str, Union[int, str]]
@@ -14,6 +19,7 @@ class SQLDB:
 
     query_get_patterns = 'select * from patterns;'
 
+    @debug_logger_inst
     def __init__(self, params: init_params = {}):
         ''' Constructor '''
         if params:
@@ -50,10 +56,11 @@ class NoSQLDB:
     ''' Class document db connectors '''
 
     @classmethod
+    @debug_logger
     async def init(cls, params: init_params) -> int:
         ''' Async constructor for async creat_pool '''
         instance = NoSQLDB()
-        final_str = 'redis://%s' % params["connetion_string"]
+        final_str = 'redis://%s' % params["connection_string"]
         instance._pool = await aioredis.create_pool(
             final_str,
             minsize=params["minsize"],
@@ -76,6 +83,10 @@ class NoSQLDB:
 
     async def write(self, key: str, msg: str) -> int:
         ''' Append message to list by key '''
+
+        msg = "NoSQLDB - write - data: key=%s, msg=%s" % (key, msg)
+        logger.debug(msg)
+
         with await self._pool as conn:
             await conn.execute('lpush', key, msg)
 
