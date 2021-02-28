@@ -1,10 +1,26 @@
 from typing import Dict, Any, List, Callable
 
+from logging import getLogger
+
+logger = getLogger(__name__)
+
+def debug_logger_inst(func: Callable):
+    ''' Debug logger for init method '''
+    def wrapper(self, **kwargs: Dict[str, Any]):
+        msg = "debug_logger_init: class=%s, params=%s" % \
+            (self.__class__.__name__, str(kwargs))
+        logger.debug(msg)
+
+        return func(self, **kwargs)
+
+    return wrapper
+
 def debug_logger(func: Callable):
+    ''' Debug logger for classmethod '''
     def wrapper(cls, **kwargs: Dict[str, Any]):
-        msg = "set_cls_params: class=%s, params=%s" % \
+        msg = "debug_logger_classmethod: class=%s, params=%s" % \
             (cls.__name__, str(kwargs))
-        print(msg)
+        logger.debug(msg)
 
         return func(cls, **kwargs)
 
