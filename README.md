@@ -1,4 +1,4 @@
 # test_srb
 test_srb
 
-Для запуска проекта использовать docker-compose.
+Для запуска проекта использовать docker-compose.yml
