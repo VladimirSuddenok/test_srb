@@ -6,6 +6,7 @@ from sqlalchemy.engine.cursor import CursorResult
 from classes.parents_classes.base_class import debug_logger_inst, debug_logger
 
 from logging import getLogger
+from os import environ
 
 logger = getLogger(__name__)
 
@@ -60,7 +61,12 @@ class NoSQLDB:
     async def init(cls, params: init_params) -> int:
         ''' Async constructor for async creat_pool '''
         instance = NoSQLDB()
-        final_str = 'redis://%s' % params["connection_string"]
+        
+        conn_str = environ.get("connection_string", False)
+        conn_str = conn_str if conn_str else params["connection_string"]
+        logger.debug("NoSQLDB - init - conn_str=%s" % conn_str)
+
+        final_str = 'redis://%s' % conn_str
         instance._pool = await aioredis.create_pool(
             final_str,
             minsize=params["minsize"],
