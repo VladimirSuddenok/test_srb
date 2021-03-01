@@ -1,6 +1,7 @@
 from classes.parents_classes.base_class import BaseClass, debug_logger_inst
 from aiohttp import web
 from classes.view import EventView
+from os import environ
 
 from logging import getLogger
 
@@ -42,6 +43,9 @@ class Server(BaseClass):
         app = web.Application()
 
         instance._set_view(app=app)
-        run_args = {"app": app, "host": cls.host, "port": cls.port}
+
+        env_host = environ.get("host", False)
+        host = env_host if env_host else cls.host 
+        run_args = {"app": app, "host": host, "port": cls.port}
 
         return web._run_app(**run_args)
