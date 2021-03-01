@@ -1,0 +1,26 @@
+version: "3.9"
+   
+services:
+  db:
+    image: redis:6.0
+    ports: 
+      - "6379:6379"
+    networks: 
+      - app_network
+    
+  web:
+    image: suddenokvg/test_srb:1
+    command: python run_test_app.py
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    networks: 
+      - app_network
+    environment: 
+      connection_string: db
+      host: 0.0.0.0
+
+networks:
+  app_network:
+    driver: bridge
